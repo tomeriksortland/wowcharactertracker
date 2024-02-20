@@ -9,8 +9,10 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.js',
         './resources/js/**/*.vue',
+        'node_modules/flowbite-vue/**/*.{js,jsx,ts,tsx,vue}',
+        'node_modules/flowbite/**/*.{js,jsx,ts,tsx}'
     ],
-
+    darkMode: 'media',
     theme: {
         extend: {
             colors: {
@@ -38,6 +40,8 @@ export default {
     },
 
     plugins: [
+        require('flowbite/plugin'),
         forms
     ],
+
 };

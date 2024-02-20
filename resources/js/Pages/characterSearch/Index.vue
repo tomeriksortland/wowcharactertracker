@@ -1,20 +1,17 @@
-<script setup>
+<script setup lang="ts">
 
 import {useForm, Head} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import CharacterCard from "@/Components/CharacterCard.vue";
-import {onMounted} from "vue";
-import {initFlowbite} from "flowbite";
+import {Auth} from "@/types/Auth";
+import {Character} from "@/types/Character";
 
-onMounted(() => {
-    initFlowbite();
-})
 
-const {} = defineProps({
-    auth: Object,
+const props = defineProps<{
+    auth: Auth,
     apiErrors: Object,
-    lastSixCharacterSearches: Array
-})
+    lastSixCharacterSearches: Character[]
+}>()
 
 const form = useForm({
     region: 'Region',
@@ -102,7 +99,7 @@ const submit = () => {
             </div>
         </div>
         <div class="flex flex-wrap w-3/4 mt-10 mx-auto">
-            <template v-for="character in lastSixCharacterSearches" :key="character.id">
+            <template v-for="character in props.lastSixCharacterSearches" :key="character.id">
                 <div class="w-1/3 px-2 mb-4">
                     <CharacterCard :character="character" />
                 </div>

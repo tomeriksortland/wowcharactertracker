@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('recent_runs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('character_id')->constrained();
             $table->string('dungeon');
             $table->string('key_level');
             $table->string('completion_time');
             $table->string('dungeon_total_time');
+            $table->integer('keystone_upgrades');
             $table->string('affix_one');
             $table->string('affix_one_icon');
             $table->string('affix_two');

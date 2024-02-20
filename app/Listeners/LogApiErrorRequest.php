@@ -15,7 +15,7 @@ class LogApiErrorRequest
     {
         ApiErrorLogModel::create(
             [
-                'user_id' => Auth::id(),
+                'user_id' => $event->user->id,
                 'response_code' => $event->response->status(),
                 'response_message' => $event->response->body(),
                 'exception_code' => '',

@@ -2,7 +2,7 @@
     "compilerOptions": {
         "allowJs": true,
         "module": "ESNext",
-        "moduleResolution": "bundler",
+        "moduleResolution": "node",
         "jsx": "preserve",
         "strict": true,
         "isolatedModules": true,
@@ -11,6 +11,8 @@
         "forceConsistentCasingInFileNames": true,
         "noEmit": true,
         "skipLibCheck": true,
+        "lib": ["ESNext", "dom", "dom.iterable", "scripthost"],
+        "types": ["@types/node"],
         "paths": {
             "@/*": ["./resources/js/*"]
         }

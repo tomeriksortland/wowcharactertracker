@@ -15,7 +15,7 @@ class LogApiRequest
     {
         ApiLogModel::create(
             [
-                'user_id' => Auth::id(),
+                'user_id' => $event->user->id,
                 'response_code' => $event->response->status(),
                 'response_message' => $event->response->status() == 200 ? 'response successful' : 'response error',
                 'query_parameters' => $event->response->transferStats->getRequest()->getUri()->getQuery()

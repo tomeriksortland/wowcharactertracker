@@ -8,7 +8,7 @@ use App\Services\RaiderIOService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class FetchAndUpdateCharacters
+class FetchAndUpdateCharacters implements ShouldQueue
 {
     private BattleNetService $battleNetService;
     private RaiderIOService $raiderIOService;
@@ -28,16 +28,15 @@ class FetchAndUpdateCharacters
             'status' => 'started'
         ]);
 
-        $characters = $this->battleNetService->getCharacters($event->user);
-
+        $characters = $this->battleNetService->getCharacters(user: $event->user);
 
         foreach ($characters->wow_accounts[0]->characters as $character) {
             if ($character->level !== 70) {
                 continue;
             }
 
-            $characterData = $this->raiderIOService->fetchCharacterData('EU', $character->realm->slug, $character->name);
-            $this->raiderIOService->storeOrUpdateCharacterDataWhenLoggingIn($event->user, $characterData);
+            $characterData = $this->raiderIOService->fetchCharacterData(region: 'EU', realm: $character->realm->slug, characterName: $character->name, user: $event->user);
+            $this->raiderIOService->storeOrUpdateCharacterDataWhenLoggingIn(user: $event->user, data: $characterData);
         }
 
         $event->characterUpdate->update([

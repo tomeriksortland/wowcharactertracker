@@ -5,6 +5,7 @@ namespace App\Events;
 use App\Models\CharacterUpdate;
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 

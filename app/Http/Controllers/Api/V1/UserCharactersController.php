@@ -3,31 +3,32 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CharacterResource;
 use App\Models\Character;
 use App\Models\CharacterUpdate;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserCharactersController extends Controller
 {
     public function index(User $user)
     {
-        $characters = [];
         $characterUpdate = CharacterUpdate::where('user_id', $user->id)->latest()->first();
 
-        if($characterUpdate->status === 'completed')
-        {
-            $characters = Character::query()
-                ->join('mythic_plus_scores', 'characters.id', '=', 'mythic_plus_scores.character_id')
-                ->orderByDesc('Overall')
-                ->take(8)
-                ->get();
+        if ($characterUpdate->status !== 'completed') {
+            return response()->json([
+                'jobStatus' => $characterUpdate->status
+            ]);
         }
 
-
-
         return response()->json([
-            'userCharacters' => $characters,
+            'characters' => CharacterResource::collection(Character::leftJoin('scores', 'characters.id', '=', 'scores.character_id')
+                ->with('score')
+                ->where('user_id', $user->id)
+                ->orderByDesc('overall')
+                ->take(8)
+                ->get(['characters.*'])),
             'jobStatus' => $characterUpdate->status
         ]);
     }

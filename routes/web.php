@@ -24,7 +24,7 @@ Route::get('/', function () {
 });
 
 Route::get('login/redirect', [BattleNetLoginController::class, 'redirect']);
-Route::get('auth/callback', [BattleNetLoginController::class, 'callback'])->name('login-with-battle-net.callback');
+Route::get('login/battlenet/callback', [BattleNetLoginController::class, 'callback'])->name('login-with-battle-net.callback');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

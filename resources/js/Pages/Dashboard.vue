@@ -1,32 +1,44 @@
-<script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import {onMounted, ref} from "vue";
-import CharacterCard from "@/Components/CharacterCard.vue";
+<script setup lang="ts">
+import {Auth} from "@/types/Auth"
+import {onMounted, ref} from "vue"
+import { Head } from '@inertiajs/vue3'
+import { FwbSpinner } from 'flowbite-vue'
+import {Character} from "@/types/Character"
+import axios, { AxiosResponse } from "axios"
+import {ApiResponse} from "@/types/ApiResponse"
+import CharacterCard from '@/Components/CharacterCard.vue'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 
-const {auth, userCharacters, allCharactersFetched} = defineProps({
-    auth: Object,
-    userCharacters: Object,
-    allCharactersFetched: String
-})
+const props = defineProps<{
+    charactersUpdateJob: string,
+    auth: Auth
+}>();
 
-let allCharactersFetchedStatus = ref(allCharactersFetched)
-let characters = ref(userCharacters)
+enum getCharactersJobStatus {
+    Completed = 'completed',
+    Pending = 'pending',
+}
+
+let getCharactersJob = ref<getCharactersJobStatus>(props.charactersUpdateJob as getCharactersJobStatus)
+let characters = ref<Character[]>([])
 
 onMounted(() => {
-    const fetchAndSetCharacters = async () => {
-        const response = await axios.get(`api/v1/users/${auth.user.id}/characters`)
-        if(response.data.jobStatus === "completed") {
-            allCharactersFetchedStatus = response.data.jobStatus
-            characters = response.data.userCharacters
-            return Promise.resolve()
-        }
-
-        setTimeout(fetchAndSetCharacters, 2000)
+    const fetchAndSetCharacters = async () : Promise<void> => {
+            const response: AxiosResponse<ApiResponse> = await axios.get(`api/v1/users/${props.auth.user.id}/characters`)
+            if(response.data.jobStatus === getCharactersJobStatus.Completed) {
+                getCharactersJob.value = response.data.jobStatus
+                characters.value = response.data.characters
+                return Promise.resolve()
+            }
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            await fetchAndSetCharacters()
     }
-
-    if(allCharactersFetchedStatus !== "completed") fetchAndSetCharacters()
+    fetchAndSetCharacters()
+    if(getCharactersJob.value !== getCharactersJobStatus.Completed) {
+        fetchAndSetCharacters()
+    }
 })
+
 </script>
 
 <template>
@@ -40,9 +52,9 @@ onMounted(() => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex flex-wrap w-full mt-10 mx-auto justify-center">
-                    <div v-if="allCharactersFetchedStatus !== 'completed'" class="flex items-center">
+                    <div v-if="getCharactersJob !== getCharactersJobStatus.Completed || !characters.length" class="flex items-center space-x-5">
                         <h1 class="text-white text-2xl">Loading characters</h1>
-                        <span class="loading loading-spinner loading-lg text-info ml-4"></span>
+                        <fwb-spinner size="8" color="red"/>
                     </div>
                     <template v-else v-for="character in characters" :key="character.id">
                         <div class="w-1/4 px-2 mb-2">

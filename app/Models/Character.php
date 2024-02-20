@@ -39,4 +39,9 @@ class Character extends Model
     {
         return $this->belongsToMany(HighestLevelRun::class, 'character_highest_level_run', 'character_id', 'highest_level_run_id');
     }
+
+    public function recentRuns() : BelongsToMany
+    {
+        return $this->belongsToMany(RecentRun::class, 'character_recent_run', 'character_id', 'recent_run_id');
+    }
 }
